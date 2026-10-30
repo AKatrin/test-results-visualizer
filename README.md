@@ -1,3 +1,5 @@
+[English](README.en.md) | **Español**
+
 # Test Results Visualizer
 
 Página web estática para visualizar resultados de tests a partir de archivos XML. Sube los resultados de **Allure**, **JUnit** o **TestNG** y obtén al instante:
@@ -167,7 +169,8 @@ examples/
   testng-example.xml       Ejemplo de TestNG
 vendor/
   chart.umd.min.js         Chart.js 4.4.7 (MIT)
-README.md
+README.md                  Este archivo (español)
+README.en.md               README en inglés
 ```
 
 ## Personalización
