@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Visualizador local de resultados de tests. Sube XML de Allure, JUnit o TestNG y obtén gráficos de pasados, fallidos, rotos y fallos por bug.">
+  <title>Test Results Visualizer · Allure / JUnit</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234f46e5'/%3E%3Cpath d='M9 22V15M16 22V10M23 22V18' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M5 19V13M12 19V6M19 19V10"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <h1>Test Results Visualizer</h1>
+        <p>Convierte tus XML de pruebas en gráficos claros. Sin servidor, sin subir datos.</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span class="local-pill" title="Tus archivos se procesan únicamente en este navegador">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <rect x="5" y="10" width="14" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+        100% local
+      </span>
+      <button type="button" class="btn btn-ghost" id="demoBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M8 5.5v13l10-6.5-10-6.5Z"/>
+        </svg>
+        Ver demo
+      </button>
+      <button type="button" class="btn btn-ghost" id="clearBtn" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M9 7V5h6v2M6.5 7l.7 12.2a1 1 0 0 0 1 .8h7.6a1 1 0 0 0 1-.8L17.5 7"/>
+        </svg>
+        Limpiar
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="upload-card" aria-labelledby="uploadTitle">
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-labelledby="uploadTitle" aria-describedby="uploadHint">
+        <div class="dropzone-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 16V4m0 0 4 4m-4-4L8 8"/>
+            <path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/>
+          </svg>
+        </div>
+        <h2 id="uploadTitle">Arrastra aquí tus resultados XML</h2>
+        <p>o <span class="dropzone-link">selecciona los archivos</span> desde tu equipo</p>
+        <p class="dropzone-hint" id="uploadHint">
+          Allure · JUnit · TestNG &nbsp;·&nbsp; también puedes subir <code>categories.json</code>
+        </p>
+        <input type="file" id="fileInput" accept=".xml,.json,application/xml,text/xml,application/json" multiple hidden>
+      </div>
+
+      <aside class="upload-side" aria-labelledby="filesTitle">
+        <div class="upload-side-head">
+          <h3 id="filesTitle">Archivos cargados</h3>
+          <span class="count-badge" id="fileCount">0</span>
+        </div>
+        <ul class="file-list" id="fileList">
+          <li class="file-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9l-6-6Z"/>
+              <path d="M13 3v6h6"/>
+            </svg>
+            Aún no hay archivos
+            <span>Sube un XML para empezar</span>
+          </li>
+        </ul>
+        <div class="upload-note">
+          <strong>Consejo:</strong> si usas Allure, añade el <code>categories.json</code> de tu proyecto para agrupar los fallos por categoría o bug.
+        </div>
+      </aside>
+    </section>
+
+    <div class="alert" id="alert" role="alert" aria-live="polite" hidden></div>
+
+    <section id="dashboard" hidden aria-labelledby="dashboardTitle">
+      <div class="results-head">
+        <div>
+          <h2 id="dashboardTitle">Resumen de la ejecución</h2>
+          <p id="resultsMeta">—</p>
+        </div>
+        <span class="chip chip--ok" id="sourceChip">0 archivos</span>
+      </div>
+
+      <div class="kpis">
+        <article class="kpi">
+          <div class="kpi-top">
+            <span class="kpi-label">Total tests</span>
+            <span class="kpi-icon kpi-icon--total" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+            </span>
+          </div>
+          <div class="kpi-value" id="kpiTotal">0</div>
+          <div class="kpi-hint" id="kpiTotalHint">Sin datos</div>
+        </article>
+
+        <article class="kpi">
+          <div class="kpi-top">
+            <span class="kpi-label">Pasados</span>
+            <span class="kpi-dot kpi-dot--passed" aria-hidden="true"></span>
+          </div>
+          <div class="kpi-value" id="kpiPassed">0</div>
+          <div class="kpi-hint" id="kpiPassedHint">—</div>
+        </article>
+
+        <article class="kpi">
+          <div class="kpi-top">
+            <span class="kpi-label">Fallidos</span>
+            <span class="kpi-dot kpi-dot--failed" aria-hidden="true"></span>
+          </div>
+          <div class="kpi-value" id="kpiFailed">0</div>
+          <div class="kpi-hint" id="kpiFailedHint">—</div>
+        </article>
+
+        <article class="kpi">
+          <div class="kpi-top">
+            <span class="kpi-label">Rotos</span>
+            <span class="kpi-dot kpi-dot--broken" aria-hidden="true"></span>
+          </div>
+          <div class="kpi-value" id="kpiBroken">0</div>
+          <div class="kpi-hint" id="kpiBrokenHint">—</div>
+        </article>
+
+        <article class="kpi">
+          <div class="kpi-top">
+            <span class="kpi-label">Omitidos</span>
+            <span class="kpi-dot kpi-dot--skipped" aria-hidden="true"></span>
+          </div>
+          <div class="kpi-value" id="kpiSkipped">0</div>
+          <div class="kpi-hint" id="kpiSkippedHint">—</div>
+        </article>
+
+        <article class="kpi kpi--rate">
+          <div class="kpi-top">
+            <span class="kpi-label">Tasa de éxito</span>
+            <span class="kpi-icon kpi-icon--rate" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+            </span>
+          </div>
+          <div class="kpi-value" id="kpiRate">0%</div>
+          <div class="kpi-hint" id="kpiRateHint">Excluye omitidos</div>
+        </article>
+      </div>
+
+      <div class="charts-grid">
+        <article class="card">
+          <header class="card-head">
+            <div>
+              <h2>Distribución por estado</h2>
+              <p>Vista general de todos los tests</p>
+            </div>
+            <span class="chart-badge">Torta</span>
+          </header>
+          <div class="chart-wrap chart-wrap--doughnut">
+            <canvas id="statusChart" role="img" aria-label="Gráfico de torta con la distribución de tests por estado"></canvas>
+          </div>
+        </article>
+
+        <article class="card">
+          <header class="card-head">
+            <div>
+              <h2 id="groupChartTitle">Fallos por bug</h2>
+              <p id="groupChartSubtitle">Tests fallidos y rotos agrupados por bug asociado</p>
+            </div>
+            <label class="select-wrap" for="groupBy">
+              <span>Agrupar por</span>
+              <select id="groupBy">
+                <option value="bug" selected>Bug</option>
+                <option value="feature">Feature</option>
+                <option value="story">Historia</option>
+                <option value="suite">Suite</option>
+                <option value="owner">Responsable</option>
+                <option value="severity">Severidad</option>
+                <option value="tag">Etiqueta</option>
+              </select>
+            </label>
+          </header>
+          <div class="chart-wrap chart-wrap--bar">
+            <canvas id="groupChart" role="img" aria-label="Gráfico de barras de tests fallidos agrupados por bug"></canvas>
+            <div class="chart-empty" id="groupEmpty" hidden>
+              <span class="chart-empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+              </span>
+              <strong>Sin fallos</strong>
+              <span>No hay tests fallidos ni rotos en esta ejecución.</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <article class="card card--full">
+        <header class="card-head">
+          <div>
+            <h2>Resultados por feature</h2>
+            <p>Pasados, fallidos, rotos y omitidos en cada funcionalidad</p>
+          </div>
+          <span class="chart-badge">Barras apiladas</span>
+        </header>
+        <div class="chart-wrap chart-wrap--features">
+          <canvas id="featureChart" role="img" aria-label="Gráfico de barras apiladas con los resultados por feature"></canvas>
+          <div class="chart-empty" id="featureEmpty" hidden>
+            <strong>Sin features</strong>
+            <span>Los tests no incluyen etiquetas de feature.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card table-card">
+        <header class="card-head card-head--table">
+          <div>
+            <h2>Detalle de tests</h2>
+            <p id="tableSubtitle">Fallidos y rotos, con su bug y mensaje de error</p>
+          </div>
+          <div class="table-tools">
+            <label class="search-wrap" for="tableSearch">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+              <input type="search" id="tableSearch" placeholder="Buscar test, bug o mensaje…" autocomplete="off">
+            </label>
+            <select id="statusFilter" class="compact-select" aria-label="Filtrar por estado">
+              <option value="failures" selected>Fallidos y rotos</option>
+              <option value="all">Todos los estados</option>
+              <option value="failed">Solo fallidos</option>
+              <option value="broken">Solo rotos</option>
+              <option value="passed">Solo pasados</option>
+              <option value="skipped">Solo omitidos</option>
+            </select>
+          </div>
+        </header>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Estado</th>
+                <th scope="col">Test</th>
+                <th scope="col">Bug</th>
+                <th scope="col">Mensaje de error</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <footer class="table-footer" id="tableFooter"></footer>
+      </article>
+    </section>
+
+    <section class="feature-hints" aria-label="Características">
+      <div class="hint-item">
+        <span class="hint-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9h-9V3Z"/><path d="M15 3.5A8.5 8.5 0 0 1 20.5 9H15V3.5Z"/></svg>
+        </span>
+        <div><strong>Torta de estados</strong><span>Pasados, fallidos, rotos y omitidos de un vistazo.</span></div>
+      </div>
+      <div class="hint-item">
+        <span class="hint-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>
+        </span>
+        <div><strong>Fallos por bug</strong><span>Detecta claves Jira, labels y categorías de Allure.</span></div>
+      </div>
+      <div class="hint-item">
+        <span class="hint-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8.1 8 9 4.6-.9 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+        <div><strong>Privado y offline</strong><span>Todo se procesa en tu navegador. Nada viaja a un servidor.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Test Results Visualizer · Compatible con Allure, JUnit y TestNG · <span id="year">2026</span></p>
+    <p class="footer-muted">Hecho con HTML, CSS y Chart.js. Abre <code>index.html</code> y listo.</p>
+  </footer>
+
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="assets/sample-data.js"></script>
+  <script src="assets/parser.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Ejemplo de resultados en formato JUnit (estilo Maven Surefire / Gradle).
+  Refleja la misma ejecución que examples/allure-example.xml:
+  9 tests · 4 pasados · 3 fallidos · 1 roto · 1 omitido.
+  Fallos asociados a PAY-87 (mensaje), CHK-204 (property bug) e INFRA-12 (property bug).
+  El resto de tests no tiene bug asociado.
+
+  Convenciones del parser de index.html:
+  - <failure>  -> fallido
+  - <error>    -> roto
+  - <skipped>  -> omitido
+  - <properties> del <testsuite> y del <testcase> se combinan (el testcase manda).
+  - Nombres de property reconocidos: feature, epic, story, owner, severity, tags, bug.
+-->
+<testsuites name="Ejecución E2E · Tienda online" tests="9" failures="3" errors="1" skipped="1" time="82.66">
+
+  <testsuite name="com.shop.tests.auth.LoginTest" tests="2" failures="0" errors="0" skipped="0" time="2.76">
+    <properties>
+      <property name="feature" value="Autenticación"/>
+      <property name="story" value="Login"/>
+      <property name="owner" value="Ana Torres"/>
+    </properties>
+
+    <testcase name="loginConCredencialesValidas" classname="com.shop.tests.auth.LoginTest" time="1.84">
+      <properties>
+        <property name="severity" value="critical"/>
+        <property name="tags" value="smoke,regression"/>
+      </properties>
+    </testcase>
+
+    <testcase name="loginConContrasenaIncorrectaMuestraError" classname="com.shop.tests.auth.LoginTest" time="0.92">
+      <properties>
+        <property name="severity" value="normal"/>
+        <property name="tags" value="regression"/>
+      </properties>
+    </testcase>
+  </testsuite>
+
+  <testsuite name="com.shop.tests.checkout.CheckoutTest" tests="2" failures="1" errors="0" skipped="0" time="11.20">
+    <properties>
+      <property name="feature" value="Checkout"/>
+      <property name="story" value="Pagos"/>
+      <property name="owner" value="Carlos Ruiz"/>
+    </properties>
+
+    <testcase name="pagoConTarjetaAprobada" classname="com.shop.tests.checkout.CheckoutTest" time="4.40">
+      <properties>
+        <property name="severity" value="blocker"/>
+        <property name="tags" value="smoke,e2e"/>
+      </properties>
+    </testcase>
+
+    <testcase name="pagoRechazadoMuestraBanner" classname="com.shop.tests.checkout.CheckoutTest" time="6.80">
+      <properties>
+        <property name="severity" value="critical"/>
+        <property name="tags" value="e2e"/>
+      </properties>
+      <failure type="java.lang.AssertionError" message="java.lang.AssertionError: se esperaba el banner &quot;Pago rechazado&quot; pero no apareció. Ticket: PAY-87">at com.shop.tests.checkout.CheckoutTest.pagoRechazadoMuestraBanner(CheckoutTest.java:54)
+at org.junit.jupiter.api.Assertions.fail(Assertions.java:1426)
+at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)</failure>
+    </testcase>
+  </testsuite>
+
+  <testsuite name="com.shop.tests.checkout.FreeShippingTest" tests="1" failures="1" errors="0" skipped="0" time="3.90">
+    <properties>
+      <property name="feature" value="Checkout"/>
+      <property name="story" value="Envíos"/>
+      <property name="owner" value="Carlos Ruiz"/>
+    </properties>
+
+    <testcase name="envioGratisSoloDesde50Euros" classname="com.shop.tests.checkout.FreeShippingTest" time="3.90">
+      <properties>
+        <property name="bug" value="CHK-204"/>
+        <property name="severity" value="critical"/>
+        <property name="tags" value="regression"/>
+      </properties>
+      <failure type="java.lang.AssertionError" message="java.lang.AssertionError: el pedido de 49,99 € no debería tener envío gratis, pero el total mostrado fue 49,99 € sin gastos de envío.">at com.shop.tests.checkout.FreeShippingTest.envioGratisSoloDesde50Euros(FreeShippingTest.java:73)
+at java.base/java.lang.reflect.Method.invoke(Method.java:568)</failure>
+    </testcase>
+  </testsuite>
+
+  <testsuite name="com.shop.api.OrdersApiTest" tests="1" failures="0" errors="1" skipped="0" time="30.40">
+    <properties>
+      <property name="feature" value="API"/>
+      <property name="story" value="Pedidos"/>
+      <property name="owner" value="Equipo Backend"/>
+      <property name="bug" value="INFRA-12"/>
+    </properties>
+
+    <testcase name="creaPedidoCorrectamente" classname="com.shop.api.OrdersApiTest" time="30.40">
+      <properties>
+        <property name="severity" value="critical"/>
+        <property name="tags" value="regression"/>
+      </properties>
+      <error type="java.net.http.HttpTimeoutException" message="TimeoutError: la API /orders no respondió en 30000ms">at com.shop.api.OrdersClient.createOrder(OrdersClient.java:76)
+at com.shop.api.OrdersApiTest.creaPedidoCorrectamente(OrdersApiTest.java:38)
+at java.base/java.lang.reflect.Method.invoke(Method.java:568)</error>
+    </testcase>
+  </testsuite>
+
+  <testsuite name="com.shop.tests.search.SearchTest" tests="1" failures="0" errors="0" skipped="1" time="0.10">
+    <properties>
+      <property name="feature" value="Búsqueda"/>
+      <property name="story" value="Buscador"/>
+      <property name="owner" value="Lucía Gómez"/>
+    </properties>
+
+    <testcase name="busquedaSinResultadosMuestraEstadoVacio" classname="com.shop.tests.search.SearchTest" time="0.10">
+      <properties>
+        <property name="severity" value="minor"/>
+        <property name="tags" value="regression"/>
+      </properties>
+      <skipped message="Pendiente: el entorno de búsqueda no estaba disponible"/>
+    </testcase>
+  </testsuite>
+
+  <testsuite name="com.shop.tests.profile.ChangeEmailTest" tests="1" failures="1" errors="0" skipped="0" time="30.50">
+    <properties>
+      <property name="feature" value="Perfil"/>
+      <property name="story" value="Datos personales"/>
+      <property name="owner" value="Diego Fernández"/>
+    </properties>
+
+    <testcase name="cambiaEmailDeLaCuenta" classname="com.shop.tests.profile.ChangeEmailTest" time="30.50">
+      <properties>
+        <property name="severity" value="normal"/>
+        <property name="tags" value="regression"/>
+      </properties>
+      <failure type="java.util.concurrent.TimeoutException" message="TimeoutError: waiting for selector &quot;#email-save&quot; to be visible (30000ms)">at com.shop.pages.ProfilePage.saveEmail(ProfilePage.java:102)
+at com.shop.tests.profile.ChangeEmailTest.cambiaEmailDeLaCuenta(ChangeEmailTest.java:41)</failure>
+    </testcase>
+  </testsuite>
+
+  <testsuite name="com.shop.tests.reports.SalesReportTest" tests="1" failures="0" errors="0" skipped="0" time="3.80">
+    <properties>
+      <property name="feature" value="Reportes"/>
+      <property name="story" value="Exportación"/>
+      <property name="owner" value="Marta Ibáñez"/>
+    </properties>
+
+    <testcase name="exportaReporteVentasPdf" classname="com.shop.tests.reports.SalesReportTest" time="3.80">
+      <properties>
+        <property name="severity" value="normal"/>
+        <property name="tags" value="smoke"/>
+      </properties>
+    </testcase>
+  </testsuite>
+
+</testsuites>

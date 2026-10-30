@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Ejemplo de resultados en formato TestNG (testng-results.xml).
+  Refleja la misma ejecución que examples/allure-example.xml y examples/junit-example.xml:
+  9 tests · 4 pasados · 4 fallidos · 1 omitido.
+
+  Convenciones del parser de index.html:
+  - status PASS -> pasado · FAIL -> fallido · SKIP -> omitido.
+  - La feature es el nombre del <test>; la suite, el nombre de la <class>.
+  - Los métodos de configuración (is-config="true") se ignoran.
+  - El bug se detecta por la clave Jira del mensaje de la excepción:
+    PAY-87, CHK-204, INFRA-12. El fallo de Perfil no lleva clave y queda como "Sin bug asociado".
+  - TestNG no distingue "roto": el timeout de API cuenta como fallido.
+-->
+<testng-results ignored="0" total="9" passed="4" failed="4" skipped="1">
+
+  <reporter-output/>
+
+  <suite name="Suite E2E · Tienda online" duration-ms="82660"
+         started-at="2024-10-22T14:26:40+02:00" finished-at="2024-10-22T14:28:04+02:00">
+    <groups/>
+
+    <test name="Autenticación" duration-ms="2760"
+          started-at="2024-10-22T14:26:40+02:00" finished-at="2024-10-22T14:26:42+02:00">
+      <class name="com.shop.e2e.LoginTest">
+        <test-method status="PASS" signature="loginConCredencialesValidas()[pri:0, instance:com.shop.e2e.LoginTest@3f0ee7cb]"
+                     name="loginConCredencialesValidas" duration-ms="1840" is-config="false"
+                     started-at="2024-10-22T14:26:40+02:00" finished-at="2024-10-22T14:26:41+02:00">
+          <reporter-output/>
+        </test-method>
+        <test-method status="PASS" signature="loginConContrasenaIncorrectaMuestraError()[pri:0, instance:com.shop.e2e.LoginTest@3f0ee7cb]"
+                     name="loginConContrasenaIncorrectaMuestraError" duration-ms="920" is-config="false"
+                     started-at="2024-10-22T14:26:41+02:00" finished-at="2024-10-22T14:26:42+02:00">
+          <reporter-output/>
+        </test-method>
+      </class>
+    </test>
+
+    <test name="Checkout" duration-ms="15100"
+          started-at="2024-10-22T14:26:42+02:00" finished-at="2024-10-22T14:26:57+02:00">
+      <class name="com.shop.e2e.CheckoutTest">
+        <test-method status="PASS" signature="pagoConTarjetaAprobada()[pri:0, instance:com.shop.e2e.CheckoutTest@61f8bee4]"
+                     name="pagoConTarjetaAprobada" duration-ms="4400" is-config="false"
+                     started-at="2024-10-22T14:26:42+02:00" finished-at="2024-10-22T14:26:47+02:00">
+          <reporter-output/>
+        </test-method>
+        <test-method status="FAIL" signature="pagoRechazadoMuestraBanner()[pri:0, instance:com.shop.e2e.CheckoutTest@61f8bee4]"
+                     name="pagoRechazadoMuestraBanner" duration-ms="6800" is-config="false"
+                     started-at="2024-10-22T14:26:47+02:00" finished-at="2024-10-22T14:26:54+02:00">
+          <exception class="java.lang.AssertionError">
+            <message><![CDATA[java.lang.AssertionError: se esperaba el banner "Pago rechazado" pero no apareció. Ticket: PAY-87]]></message>
+            <full-stacktrace><![CDATA[at com.shop.e2e.CheckoutTest.pagoRechazadoMuestraBanner(CheckoutTest.java:54)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+at org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:229)]]></full-stacktrace>
+          </exception>
+          <reporter-output/>
+        </test-method>
+        <test-method status="FAIL" signature="envioGratisSoloDesde50Euros()[pri:0, instance:com.shop.e2e.CheckoutTest@61f8bee4]"
+                     name="envioGratisSoloDesde50Euros" duration-ms="3900" is-config="false"
+                     started-at="2024-10-22T14:26:54+02:00" finished-at="2024-10-22T14:26:57+02:00">
+          <exception class="java.lang.AssertionError">
+            <message><![CDATA[java.lang.AssertionError: el pedido de 49,99 € no debería tener envío gratis. Bug: CHK-204]]></message>
+            <full-stacktrace><![CDATA[at com.shop.e2e.CheckoutTest.envioGratisSoloDesde50Euros(CheckoutTest.java:73)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)]]></full-stacktrace>
+          </exception>
+          <reporter-output/>
+        </test-method>
+      </class>
+    </test>
+
+    <test name="API" duration-ms="30400"
+          started-at="2024-10-22T14:26:58+02:00" finished-at="2024-10-22T14:27:28+02:00">
+      <class name="com.shop.api.OrdersApiTest">
+        <test-method status="FAIL" signature="creaPedidoCorrectamente()[pri:0, instance:com.shop.api.OrdersApiTest@5d099f62]"
+                     name="creaPedidoCorrectamente" duration-ms="30400" is-config="false"
+                     started-at="2024-10-22T14:26:58+02:00" finished-at="2024-10-22T14:27:28+02:00">
+          <exception class="java.net.http.HttpTimeoutException">
+            <message><![CDATA[TimeoutError: la API /orders no respondió en 30000ms. Ticket: INFRA-12]]></message>
+            <full-stacktrace><![CDATA[at com.shop.api.OrdersClient.createOrder(OrdersClient.java:76)
+at com.shop.api.OrdersApiTest.creaPedidoCorrectamente(OrdersApiTest.java:38)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)]]></full-stacktrace>
+          </exception>
+          <reporter-output/>
+        </test-method>
+      </class>
+    </test>
+
+    <test name="Búsqueda" duration-ms="100"
+          started-at="2024-10-22T14:27:28+02:00" finished-at="2024-10-22T14:27:29+02:00">
+      <class name="com.shop.e2e.SearchTest">
+        <test-method status="SKIP" signature="busquedaSinResultadosMuestraEstadoVacio()[pri:0, instance:com.shop.e2e.SearchTest@1bce4f0a]"
+                     name="busquedaSinResultadosMuestraEstadoVacio" duration-ms="100" is-config="false"
+                     started-at="2024-10-22T14:27:29+02:00" finished-at="2024-10-22T14:27:29+02:00">
+          <exception class="org.testng.SkipException">
+            <message><![CDATA[Pendiente: el entorno de búsqueda no estaba disponible]]></message>
+            <full-stacktrace><![CDATA[org.testng.SkipException: Pendiente: el entorno de búsqueda no estaba disponible
+at com.shop.tests.search.SearchTest.<init>(SearchTest.java:22)
+at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)]]></full-stacktrace>
+          </exception>
+          <reporter-output/>
+        </test-method>
+      </class>
+    </test>
+
+    <test name="Perfil" duration-ms="30500"
+          started-at="2024-10-22T14:27:29+02:00" finished-at="2024-10-22T14:28:00+02:00">
+      <class name="com.shop.e2e.ChangeEmailTest">
+        <test-method status="FAIL" signature="cambiaEmailDeLaCuenta()[pri:0, instance:com.shop.e2e.ChangeEmailTest@4a3e5b7d]"
+                     name="cambiaEmailDeLaCuenta" duration-ms="30500" is-config="false"
+                     started-at="2024-10-22T14:27:29+02:00" finished-at="2024-10-22T14:28:00+02:00">
+          <exception class="java.util.concurrent.TimeoutException">
+            <message><![CDATA[TimeoutError: waiting for selector "#email-save" to be visible (30000ms)]]></message>
+            <full-stacktrace><![CDATA[at com.shop.pages.ProfilePage.saveEmail(ProfilePage.java:102)
+at com.shop.e2e.ChangeEmailTest.cambiaEmailDeLaCuenta(ChangeEmailTest.java:41)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)]]></full-stacktrace>
+          </exception>
+          <reporter-output/>
+        </test-method>
+      </class>
+    </test>
+
+    <test name="Reportes" duration-ms="3800"
+          started-at="2024-10-22T14:28:00+02:00" finished-at="2024-10-22T14:28:04+02:00">
+      <class name="com.shop.e2e.ReportTest">
+        <test-method status="PASS" signature="exportaReporteVentasPdf()[pri:0, instance:com.shop.e2e.ReportTest@2f1d0e9a]"
+                     name="exportaReporteVentasPdf" duration-ms="3800" is-config="false"
+                     started-at="2024-10-22T14:28:00+02:00" finished-at="2024-10-22T14:28:04+02:00">
+          <reporter-output/>
+        </test-method>
+      </class>
+    </test>
+
+  </suite>
+
+</testng-results>
